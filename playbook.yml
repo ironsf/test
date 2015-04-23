@@ -1,0 +1,21 @@
+---
+- hosts: all
+  sudo: true
+  tasks:
+    - name: update apt cache
+      apt: update_cache=yes
+    - name: install apache
+      apt: name=apache2 state=present
+    - name: install php
+      apt: name=php5 state=present
+    - name: remove the folder /var/www
+      file: path=/var/www state=absent
+    - name: make symlink /var/www to /mnt/disk
+      file: path=/var/www
+        src=/mnt/disk
+        state=link
+        force=yes
+    - name: Copy index.php
+      template: src=./index.j2 dest=/var/www/index.php
+    - name: restart apache
+      action: service name=apache2 state=reloaded
